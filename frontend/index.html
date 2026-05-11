@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Xe Trường học | Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Vehicle AI</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active" data-view="dashboard">
+                        <i class="fas fa-th-large"></i>
+                        <span>Tổng quan</span>
+                    </li>
+                    <li data-view="students">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Học sinh & Xe</span>
+                    </li>
+                    <li data-view="detection">
+                        <i class="fas fa-camera"></i>
+                        <span>Trạm bảo vệ (AI)</span>
+                    </li>
+                    <li data-view="fees">
+                        <i class="fas fa-money-check-alt"></i>
+                        <span>Thu phí tháng</span>
+                    </li>
+                    <li data-view="logs">
+                        <i class="fas fa-history"></i>
+                        <span>Lịch sử ra vào</span>
+                    </li>
+                    <li data-view="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Cài đặt</span>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=random" alt="Admin">
+                    <div class="user-info">
+                        <p class="name">Quản trị viên</p>
+                        <p class="role">Hệ thống</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Tìm kiếm học sinh, biển số xe...">
+                </div>
+                <div class="header-actions">
+                    <button class="btn-notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge"></span>
+                    </button>
+                    <button class="btn-theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <section id="view-dashboard" class="view active">
+                <div class="view-header">
+                    <h1>Tổng quan hệ thống</h1>
+                    <p>Chào mừng bạn trở lại, đây là thống kê hôm nay.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <h3 id="total-students-count">0</h3>
+                            <p>Tổng học sinh</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-motorcycle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="total-motorbikes-count">0</h3>
+                            <p>Xe máy</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-bicycle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="total-bicycles-count">0</h3>
+                            <p>Xe đạp</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="paid-month-count">0</h3>
+                            <p>Đã đóng phí tháng</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="unpaid-month-count">0</h3>
+                            <p>Chưa đóng phí</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="chart-container">
+                        <h3>Hoạt động xe 7 ngày qua</h3>
+                        <div class="activity-chart-wrapper" style="height: 300px; position: relative;">
+                            <canvas id="activity-chart-canvas" width="600" height="300"></canvas>
+                        </div>
+                    </div>
+                    <div class="recent-logs">
+                        <h3>Lượt ra vào mới nhất</h3>
+                        <div id="recent-activity-list" class="log-list">
+                            <div class="empty-state">Đang tải dữ liệu...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students View -->
+            <section id="view-students" class="view hidden">
+                <div class="view-header">
+                    <div class="header-left">
+                        <h1>Danh sách Học sinh & Xe</h1>
+                        <p>Quản lý thông tin đăng ký phương tiện.</p>
+                    </div>
+                    <div class="header-actions-inline">
+                        <a href="http://localhost:8000/admin/template" target="_blank" class="btn btn-secondary">
+                            <i class="fas fa-download"></i> Xuất Excel
+                        </a>
+                        <button class="btn btn-secondary" id="btn-show-import">
+                            <i class="fas fa-file-import"></i> Nhập Excel
+                        </button>
+                        <button class="btn btn-primary" id="btn-add-student">
+                            <i class="fas fa-plus"></i> Thêm mới
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hidden Import Section -->
+                <div id="inline-import-area" class="import-container hidden">
+                    <div class="upload-box small-upload" id="drop-area">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Kéo thả file vào đây hoặc bấm để chọn (.xlsx)</p>
+                        <input type="file" id="file-input" hidden accept=".xlsx, .xls">
+                    </div>
+                    <div id="file-info" class="file-info hidden">
+                        <p><i class="far fa-file-excel"></i> <span id="file-name">filename.xlsx</span></p>
+                        <button class="btn btn-primary" id="btn-upload">Bắt đầu nhập</button>
+                        <button class="btn btn-secondary" id="btn-cancel-upload">Hủy</button>
+                    </div>
+                    <div id="import-status" class="import-status hidden">
+                        <div class="loader"></div>
+                        <p>Đang xử lý...</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="students-table">
+                        <thead>
+                            <tr>
+                                <th>Học sinh</th>
+                                <th>Lớp</th>
+                                <th>Loại xe</th>
+                                <th>Biển số</th>
+                                <th>Trạng thái phí</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-body">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Detection View -->
+            <section id="view-detection" class="view hidden">
+                <div class="view-header">
+                    <div class="header-left">
+                        <h1>Trạm Kiểm Soát Thông Minh</h1>
+                        <p id="current-time-display">Hệ thống đang sẵn sàng...</p>
+                    </div>
+                    <div class="card-actions">
+                        <button id="btn-reset-camera" class="btn btn-sm btn-secondary" title="Khởi động lại Camera">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button id="btn-stop-camera" class="btn btn-sm btn-danger hidden">Dừng Camera</button>
+                        <button id="btn-start-camera" class="btn btn-sm btn-primary">Bật Camera</button>
+                    </div>
+                </div>
+
+                <div class="guard-layout">
+                    <!-- Live Stream -->
+                    <div class="guard-card live-stream-card">
+                        <div class="card-header">
+                            <i class="fas fa-video"></i> Luồng Trực Tiếp
+                            <span class="status-dot green"></span>
+                        </div>
+                        <div class="camera-wrapper">
+                            <img id="webcam-feed-img" class="hidden" crossorigin="anonymous">
+                            <canvas id="detection-canvas" class="hidden"></canvas>
+                            <div id="detection-placeholder" class="placeholder-overlay">
+                                <i class="fas fa-video-slash"></i>
+                                <p>Camera đang tắt</p>
+                            </div>
+                            <!-- Signal Lights moved to corner -->
+                            <div class="compact-signal" id="signal-light">
+                                <div class="light red" id="light-top"></div>
+                                <div class="light green" id="light-bottom"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scan Results -->
+                    <div class="guard-sidebar">
+                        <!-- Snapshot Card -->
+                        <div class="guard-card snapshot-card">
+                            <div class="card-header"><i class="fas fa-camera"></i> Ảnh Chụp AI</div>
+                            <div class="snapshot-wrapper">
+                                <img id="ai-snapshot-img" src="https://via.placeholder.com/400x300?text=Chưa+có+ảnh+chụp" alt="Snapshot">
+                            </div>
+                        </div>
+
+                        <!-- Result Info Card -->
+                        <div class="guard-card result-info-card" id="main-status-card">
+                            <div class="result-header-modern">KẾT QUẢ NHẬN DIỆN</div>
+                            
+                            <div class="plate-display">
+                                <span id="res-plate-large">-- -- --</span>
+                            </div>
+
+                            <div class="status-badge-modern" id="res-status-badge">
+                                <i class="fas fa-info-circle"></i> <span id="status-text">Đang chờ xe...</span>
+                            </div>
+
+                            <div class="info-list">
+                                <div class="info-item">
+                                    <span class="label">Thời gian:</span>
+                                    <span class="value" id="res-time">--:--:--</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Ngày:</span>
+                                    <span class="value" id="res-date">--/--/----</span>
+                                </div>
+                                <div class="info-item border-top">
+                                     <span class="label">Phí tháng:</span>
+                                     <span class="value" id="res-payment-status">---</span>
+                                 </div>
+                                 <div class="info-item border-top">
+                                     <span class="label">Chủ xe:</span>
+                                     <span class="value highlight" id="res-owner-name">Chưa rõ</span>
+                                 </div>
+                                <div class="info-item">
+                                    <span class="label">Lớp:</span>
+                                    <span class="value" id="res-owner-class">---</span>
+                                </div>
+                            </div>
+
+                            <div id="res-alert-msg" class="footer-alert"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fee Management View -->
+            <section id="view-fees" class="view hidden">
+                <div class="view-header header-with-action">
+                    <div>
+                        <h1>Quản lý Thu phí</h1>
+                        <p>Theo dõi và đánh dấu trạng thái đóng phí hàng tháng.</p>
+                    </div>
+                    <div class="payment-stats-mini">
+                        <canvas id="payment-summary-chart" width="200" height="80"></canvas>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="table-fees">
+                        <thead>
+                            <tr>
+                                <th>Mã HS</th>
+                                <th>Họ tên</th>
+                                <th>Lớp</th>
+                                <th>Phương tiện</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fees-body">
+                            <!-- Load từ JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Logs View -->
+            <section id="view-logs" class="view hidden">
+                <div class="view-header">
+                    <h1>Lịch sử ra vào</h1>
+                    <p>Nhật ký chi tiết các lượt xe ra vào cổng trường.</p>
+                </div>
+
+                <div class="filter-bar">
+                    <input type="date" id="log-date-filter" class="btn btn-secondary">
+                    <input type="text" id="log-search-filter" placeholder="Lọc theo tên, biển số..."
+                        class="btn btn-secondary" style="width: 250px;">
+                    <button class="btn btn-primary"><i class="fas fa-filter"></i> Lọc</button>
+                </div>
+
+                <div class="table-container">
+                    <table id="table-logs">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Ảnh chụp</th>
+                                <th>Phương tiện</th>
+                                <th>Biển số</th>
+                                <th>Chủ xe</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-body">
+                            <!-- Load từ JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="view-settings" class="view hidden">
+                <div class="view-header">
+                    <h1>Cài đặt hệ thống</h1>
+                    <p>Cấu hình thông số và quyền quản trị.</p>
+                </div>
+                <div class="table-container">
+                    <p style="padding: 40px; text-align: center; color: var(--text-muted);">Tính năng này đang được phát triển...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Thêm Học sinh & Xe -->
+    <div id="modal-student" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Thêm mới Học sinh & Xe</h2>
+                <button class="btn-close" id="btn-close-modal"
+                    onclick="document.getElementById('modal-student').classList.add('hidden')">&times;</button>
+            </div>
+            <form id="form-student" class="modal-body">
+                <div class="form-group">
+                    <label for="student_code">Mã học sinh</label>
+                    <input type="text" id="student_code" required placeholder="Ví dụ: HS001">
+                </div>
+                <div class="form-group">
+                    <label for="full_name">Họ và tên</label>
+                    <input type="text" id="full_name" required placeholder="Nguyễn Văn A">
+                </div>
+                <div class="form-group">
+                    <label for="class_name">Lớp</label>
+                    <input type="text" id="class_name" required placeholder="12A1">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="vehicle_type">Loại xe</label>
+                        <select id="vehicle_type">
+                            <option value="MOTORBIKE">Xe máy</option>
+                            <option value="BICYCLE">Xe đạp</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="license_plate">Biển số / Mã thẻ</label>
+                        <input type="text" id="license_plate" placeholder="29A-12345">
+                    </div>
+                </div>
+                <div class="form-row hidden">
+                    <div class="form-group">
+                        <label for="tag_id">Mã Tag (nếu có)</label>
+                        <input type="text" id="tag_id" placeholder="RFID Tag">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="brand">Hãng xe</label>
+                        <input type="text" id="brand" placeholder="Honda, Yamaha...">
+                    </div>
+                    <div class="form-group">
+                        <label for="color">Màu xe</label>
+                        <input type="text" id="color" placeholder="Đen, Trắng...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-modal"
+                        onclick="document.getElementById('modal-student').classList.add('hidden')">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Overlay -->
+    <div id="notification-toast" class="toast hidden"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
